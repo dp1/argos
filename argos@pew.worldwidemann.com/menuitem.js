@@ -9,14 +9,13 @@
  * (https://gnu.org/licenses/gpl.html)
  */
 
-const Lang = imports.lang;
-const GLib = imports.gi.GLib;
-const Gio = imports.gi.Gio;
-const PopupMenu = imports.ui.popupMenu;
+import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-const Extension = imports.misc.extensionUtils.getCurrentExtension();
-const ArgosLineView = Extension.imports.lineview.ArgosLineView;
-const Utilities = Extension.imports.utilities;
+import { ArgosLineView } from './lineview.js';
+import * as Utilities from './utilities.js';
+
 const AltSwitcher = Utilities.AltSwitcher;
 
 // "constructor" aka "init function" for ArgosMenuItem.
@@ -41,7 +40,7 @@ const _ArgosMenuItem_init = function(button, line, alternateLine) {
   }
 
   if (hasAction) {
-    this.connect("activate", Lang.bind(this, function() {
+    this.connect("activate", () => function() {
       let activeLine = (altSwitcher === null) ? line : altSwitcher.actor.get_child().line;
 
       if (activeLine.hasOwnProperty("href"))
@@ -73,7 +72,7 @@ const _ArgosMenuItem_init = function(button, line, alternateLine) {
       } else if (activeLine.refresh === "true") {
         button.update();
       }
-    }));
+    });
   }
 }
 
@@ -90,7 +89,7 @@ const _ArgosMenuItem_superArg = function(button, line, alternateLine) {
   };
 }
 
-var ArgosMenuItem = Utilities.makeSimpleClass(
+export let ArgosMenuItem = Utilities.makeSimpleClass(
   PopupMenu.PopupBaseMenuItem,
   _ArgosMenuItem_superArg,
   _ArgosMenuItem_init,

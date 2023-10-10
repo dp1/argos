@@ -9,14 +9,14 @@
  * (https://gnu.org/licenses/gpl.html)
  */
 
-const GLib = imports.gi.GLib;
-const Gio = imports.gi.Gio;
-const Main = imports.ui.main;
-const Mainloop = imports.mainloop;
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 
-const Extension = imports.misc.extensionUtils.getCurrentExtension();
-const ArgosButton = Extension.imports.button.ArgosButton;
-const Utilities = Extension.imports.utilities;
+import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+
+import { ArgosButton } from './button.js';
+import * as Utilities from './utilities.js';
 
 let directory;
 let directoryMonitor;
@@ -67,7 +67,7 @@ function enable() {
     // Some high-level file operations trigger multiple "changed" events in rapid succession.
     // Debouncing groups them together to avoid unnecessary updates.
     if (debounceTimeout === null) {
-      debounceTimeout = Mainloop.timeout_add(100, function() {
+      debounceTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT_IDLE, 100, function() {
         debounceTimeout = null;
         addButtons();
         return false;
@@ -80,7 +80,7 @@ function disable() {
   directoryMonitor.disconnect(directoryChangedId);
 
   if (debounceTimeout !== null)
-    Mainloop.source_remove(debounceTimeout);
+    GLib.source_remove(debounceTimeout);
 
   removeButtons();
 }
@@ -119,4 +119,19 @@ function removeButtons() {
     buttons[i].destroy();
   }
   buttons = [];
+}
+
+export default class ArgosExtension extends Extension {
+  constructor(metadata) {
+    super(metadata);
+    init();
+  }
+
+  enable() {
+    enable();
+  }
+
+  disable() {
+    disable();
+  }
 }
